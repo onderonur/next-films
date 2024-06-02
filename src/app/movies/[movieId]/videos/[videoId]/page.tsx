@@ -1,15 +1,13 @@
-// TODO: Metadata'ları düzelt genel projede
-
-import { BaseAvatar } from '@/common/base-avatar';
-import { ListItemLink } from '@/common/list-item-link';
-import { Padder } from '@/common/padder';
-import { PageRoot } from '@/layout/page-root';
-import { MediaCardHeader } from '@/medias/media-card-header';
-import { getYouTubeThumbnailUrl } from '@/medias/media-utils';
-import { YouTubePlayer } from '@/medias/youtube-player';
-import { getMovie, getMovieVideos } from '@/movies/movie-fetchers';
-import { getMetadata } from '@/seo/seo-utils';
-import { lineClamp, responsiveBorderRadius } from '@/theme/theme-utils';
+import { AppHeaderOffset } from '@/core/layouts/components/app-header';
+import { getMetadata } from '@/core/seo/utils';
+import { lineClamp, responsiveBorderRadius } from '@/core/theme/utils';
+import { BaseAvatar } from '@/core/ui/components/base-avatar';
+import { CardHeaderWithAvatar } from '@/core/ui/components/card';
+import { ListItemLink } from '@/core/ui/components/list-item-link';
+import { Padder } from '@/core/ui/components/padder';
+import { YouTubePlayer } from '@/features/media/components/youtube-player';
+import { getYouTubeThumbnailUrl } from '@/features/media/utils';
+import { getMovie, getMovieVideos } from '@/features/movies/data';
 import {
   Box,
   Card,
@@ -34,17 +32,13 @@ async function getPageData({
     getMovieVideos(Number(movieId)),
   ]);
 
-  if (!movie) {
-    notFound();
-  }
+  if (!movie) notFound();
 
-  const videoToWatch = videos.results.find((video) => video.id === videoId);
+  const videoToWatch = videos.find((video) => video.id === videoId);
 
-  if (!videoToWatch) {
-    notFound();
-  }
+  if (!videoToWatch) notFound();
 
-  return { movie, videos: videos.results, videoToWatch };
+  return { movie, videos, videoToWatch };
 }
 
 type MovieVideoPageProps = {
@@ -78,7 +72,7 @@ export default async function MovieVideoPage({
   });
 
   return (
-    <PageRoot hasHeaderGutter>
+    <AppHeaderOffset>
       <Padder disableMobilePadding>
         <Box
           sx={{
@@ -88,9 +82,9 @@ export default async function MovieVideoPage({
             alignItems: 'start',
           }}
         >
-          <Card sx={responsiveBorderRadius()}>
+          <Card component="main" sx={responsiveBorderRadius()}>
             <YouTubePlayer youTubeId={videoToWatch.key} />
-            <MediaCardHeader
+            <CardHeaderWithAvatar
               title={videoToWatch.name}
               subheader={movie.title}
               href={`/movies/${movie.id}`}
@@ -156,6 +150,6 @@ export default async function MovieVideoPage({
           </Card>
         </Box>
       </Padder>
-    </PageRoot>
+    </AppHeaderOffset>
   );
 }

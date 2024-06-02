@@ -1,30 +1,33 @@
-import { FixedBackgroundImage } from '@/common/fixed-background-image';
-import { Padder } from '@/common/padder';
-import { SectionTitle } from '@/common/section-title';
-import { SeeAllLink } from '@/common/see-all-link';
-import { SingleRowGridList } from '@/common/single-row-grid-list';
-import { PageRoot } from '@/layout/page-root';
-import { ImageCard } from '@/medias/image-card';
-import { PersonCastingGridList } from '@/people-profile/person-casting-grid-list';
-import { PersonCrewGridList } from '@/people-profile/person-crew-grid-list';
-import { PersonSummary } from '@/people-profile/person-summary';
-import { getPersonDetails } from '@/people/people-fetchers';
-import { getMetadata } from '@/seo/seo-utils';
-import { getTmdbConfiguration } from '@/tmdb/tmdb-configuration-fetchers';
-import { getTmdbImageUrl } from '@/tmdb/tmdb-configuration-utils';
+import { AppHeaderOffset } from '@/core/layouts/components/app-header';
+import { getMetadata } from '@/core/seo/utils';
+import {
+  PersonCastings,
+  PersonCastingsSkeleton,
+} from '@/features/people/components/person-castings';
+import {
+  PersonCrewings,
+  PersonCrewingsSkeleton,
+} from '@/features/people/components/person-crewings';
+import {
+  PersonImages,
+  PersonImagesSkeleton,
+} from '@/features/people/components/person-images';
+import { PersonSummary } from '@/features/people/components/person-summary';
+import { getPerson } from '@/features/people/data';
+import { getTmdbConfiguration } from '@/features/tmdb/data';
+import { getTmdbImageUrl } from '@/features/tmdb/utils';
 import { Container, Divider, Stack } from '@mui/material';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 async function getPageData(personId: string) {
   const [tmdbConfiguration, person] = await Promise.all([
     getTmdbConfiguration(),
-    getPersonDetails(Number(personId)),
+    getPerson(Number(personId)),
   ]);
 
-  if (!person) {
-    notFound();
-  }
+  if (!person) notFound();
 
   return { tmdbConfiguration, person };
 }
@@ -62,55 +65,30 @@ export default async function PersonPage({
   const { person } = await getPageData(personId);
 
   return (
-    <PageRoot hasHeaderGutter>
-      <FixedBackgroundImage src={person.profile_path} alt={person.name} />
-      <Stack spacing={2}>
-        <Container>
-          <PersonSummary person={person} />
-        </Container>
+    <AppHeaderOffset>
+      <main>
+        <Stack spacing={6}>
+          <Stack spacing={2}>
+            <Container>
+              <PersonSummary person={person} />
+            </Container>
 
-        <Divider />
+            <Divider />
+          </Stack>
 
-        <section>
-          <Padder>
-            <SectionTitle title="Images" />
-            <SingleRowGridList itemCount={{ xs: 4, sm: 6, lg: 7, xl: 8 }}>
-              {person.images.profiles.slice(0, 8).map((image, i) => {
-                return (
-                  <li key={image.file_path}>
-                    <ImageCard
-                      href={`/people/${person.id}/images${image.file_path}`}
-                      imageSrc={image.file_path}
-                      alt={`${person.name} Image - ${i}`}
-                      aspectRatio="2 / 3"
-                    />
-                  </li>
-                );
-              })}
-            </SingleRowGridList>
-          </Padder>
-          <SeeAllLink
-            href={`/people/${person.id}/images${person.images.profiles[0].file_path}`}
-            isLinkVisible={!!person.images.profiles.length}
-          />
-        </section>
+          <Suspense fallback={<PersonImagesSkeleton />}>
+            <PersonImages personId={Number(personId)} />
+          </Suspense>
 
-        <section>
-          <Padder>
-            <SectionTitle title="Castings" />
-            <PersonCastingGridList person={person} />
-          </Padder>
-        </section>
+          <Suspense fallback={<PersonCastingsSkeleton />}>
+            <PersonCastings personId={Number(personId)} />
+          </Suspense>
 
-        <Divider />
-
-        <section>
-          <Padder>
-            <SectionTitle title="Crew" />
-            <PersonCrewGridList person={person} />
-          </Padder>
-        </section>
-      </Stack>
-    </PageRoot>
+          <Suspense fallback={<PersonCrewingsSkeleton />}>
+            <PersonCrewings personId={Number(personId)} />
+          </Suspense>
+        </Stack>
+      </main>
+    </AppHeaderOffset>
   );
 }

@@ -1,8 +1,8 @@
-import { ImageGallery } from '@/medias/image-gallery';
-import { getMovie, getMovieImages } from '@/movies/movie-fetchers';
-import { getMetadata } from '@/seo/seo-utils';
-import { getTmdbConfiguration } from '@/tmdb/tmdb-configuration-fetchers';
-import { getTmdbImageUrl } from '@/tmdb/tmdb-configuration-utils';
+import { getMetadata } from '@/core/seo/utils';
+import { ImageGallery } from '@/features/media/components/image-gallery';
+import { getMovie, getMovieImages } from '@/features/movies/data';
+import { getTmdbConfiguration } from '@/features/tmdb/data';
+import { getTmdbImageUrl } from '@/features/tmdb/utils';
 import { notFound } from 'next/navigation';
 
 async function getPageData({
@@ -18,19 +18,15 @@ async function getPageData({
     getTmdbConfiguration(),
   ]);
 
-  if (!movie) {
-    notFound();
-  }
+  if (!movie) notFound();
 
-  const imageToView = images.backdrops.find(
+  const imageToView = images.find(
     (backdrop) => backdrop.file_path === `/${imagePath}`,
   );
 
-  if (!imageToView) {
-    notFound();
-  }
+  if (!imageToView) notFound();
 
-  return { movie, tmdbConfiguration, images: images.backdrops, imageToView };
+  return { movie, tmdbConfiguration, images, imageToView };
 }
 
 type MovieImagePageProps = {

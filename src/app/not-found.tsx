@@ -1,10 +1,12 @@
-import { ErrorMessage } from '@/error-handling/error-message';
-import { PageRoot } from '@/layout/page-root';
+import { ErrorMessage } from '@/core/errors/components/error-message';
+import { AppHeaderOffset } from '@/core/layouts/components/app-header';
 
 export default function NotFoundPage() {
   return (
-    <PageRoot hasHeaderGutter>
-      <ErrorMessage statusCode={404} message="Not Found" />
-    </PageRoot>
+    <AppHeaderOffset>
+      <main>
+        <ErrorMessage statusCode={404} message="Not Found" />
+      </main>
+    </AppHeaderOffset>
   );
 }

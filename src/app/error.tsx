@@ -1,7 +1,7 @@
 'use client';
 
-import { ErrorMessage } from '@/error-handling/error-message';
-import { PageRoot } from '@/layout/page-root';
+import { ErrorMessage } from '@/core/errors/components/error-message';
+import { AppHeaderOffset } from '@/core/layouts/components/app-header';
 
 type ErrorPageProps = {
   error: Error;
@@ -9,8 +9,10 @@ type ErrorPageProps = {
 
 export default function ErrorPage({ error }: ErrorPageProps) {
   return (
-    <PageRoot hasHeaderGutter>
-      <ErrorMessage statusCode={500} message={error.message} />
-    </PageRoot>
+    <AppHeaderOffset>
+      <main>
+        <ErrorMessage statusCode={500} message={error.message} />
+      </main>
+    </AppHeaderOffset>
   );
 }

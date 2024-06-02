@@ -1,36 +1,43 @@
 {
-  "name": "tmdb-explorer",
+  "name": "next-moviez",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "build": "next build",
-    "codequality": "npm run format && npm run lint",
-    "codequality:fix": "npm run format:fix && npm run lint:fix",
+    "codequality": "pnpm format && pnpm lint && pnpm typecheck",
+    "codequality:fix": "pnpm format:fix && pnpm lint:fix && pnpm typecheck",
     "dev": "next dev",
     "format": "prettier --check --ignore-unknown .",
     "format:fix": "prettier --write --ignore-unknown .",
     "lint": "next lint --max-warnings 0",
     "lint:fix": "next lint --fix --max-warnings 0",
-    "prepare": "husky install",
+    "prepare": "husky",
     "start": "next start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "unused": "knip",
+    "updates": "npm-check-updates -i"
   },
   "dependencies": {
-    "@emotion/react": "^11.11.4",
-    "@emotion/styled": "^11.11.5",
+    "@emotion/cache": "^11.13.1",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^5.15.19",
     "@mui/material": "^5.15.19",
+    "@mui/utils": "^6.1.6",
+    "@next/third-parties": "^15.0.3",
     "lodash": "^4.17.21",
     "next": "^14.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-infinite-scroll-hook": "^4.1.1",
-    "swr": "^2.2.5"
+    "react-infinite-scroll-hook": "^5.0.1",
+    "server-only": "^0.0.1",
+    "swr": "^2.2.5",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.4",
-    "@types/node": "^20.13.0",
-    "@types/react": "^18.3.3",
+    "@types/lodash": "^4.17.13",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
     "@typescript-eslint/eslint-plugin": "^7.10.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.3",
@@ -38,11 +45,14 @@
     "eslint-plugin-deprecation": "^2.0.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-unicorn": "^53.0.0",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.5",
-    "prettier": "^3.2.5",
-    "prettier-plugin-organize-imports": "^3.2.4",
-    "prettier-plugin-packagejson": "^2.5.0",
-    "typescript": "^5.4.5"
-  }
+    "husky": "^9.1.6",
+    "knip": "^5.36.5",
+    "lint-staged": "^15.2.10",
+    "npm-check-updates": "^17.1.10",
+    "prettier": "^3.3.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-packagejson": "^2.5.3",
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "pnpm@9.12.3"
 }

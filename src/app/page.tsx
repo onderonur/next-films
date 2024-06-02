@@ -1,162 +1,120 @@
-import { ChipLink } from '@/common/chip-link';
-import { FIRST_PAGE } from '@/common/common-constants';
-import { Padder } from '@/common/padder';
-import { SectionTitle } from '@/common/section-title';
-import { SeeAllLink } from '@/common/see-all-link';
-import { SingleRowGridList } from '@/common/single-row-grid-list';
-import { FeaturedMovie } from '@/movies/featured-movie';
-import { MovieCard } from '@/movies/movie-card';
+import { createUrl } from '@/core/routing/utils';
+import { getMetadata } from '@/core/seo/utils';
+import { FIRST_PAGE } from '@/core/shared/utils';
+import {
+  FeaturedListSection,
+  FeaturedListSectionSkeleton,
+} from '@/features/home/components/featured-list-section';
+import { MediaType } from '@/features/media/utils';
+import { FeaturedMovie } from '@/features/movies/components/featured-movie';
 import {
   getDiscoverMovies,
   getMovieGenres,
   getPopularMovies,
   getTopRatedMovies,
-} from '@/movies/movie-fetchers';
-import type { Genre, MovieListItem } from '@/movies/movie-types';
-import { getPopularPeople } from '@/people/people-fetchers';
-import type { PersonListItem } from '@/people/people-types';
-import { PersonCard } from '@/people/person-card';
-import { getMetadata } from '@/seo/seo-utils';
-import { Box, Divider, Stack } from '@mui/material';
-
-enum RootPageSectionType {
-  MOVIES,
-  PEOPLE,
-  GENRES,
-}
+} from '@/features/movies/data';
+import { getPopularPeople } from '@/features/people/data';
+import { Divider, Stack } from '@mui/material';
+import { Suspense } from 'react';
 
 export const metadata = getMetadata({
   title: 'Home',
   pathname: '/',
 });
 
-export default async function RootPage() {
-  const [popularMovies, topratedMovies, popularPeople, movieGenres] =
-    await Promise.all([
-      getPopularMovies(FIRST_PAGE),
-      getTopRatedMovies(FIRST_PAGE),
-      getPopularPeople(FIRST_PAGE),
-      getMovieGenres(),
-    ]);
+export default async function HomePage() {
+  const [movieGenres, popularMovies] = await Promise.all([
+    getMovieGenres(),
+    getPopularMovies(FIRST_PAGE),
+  ]);
 
-  const [featuredMovie, ...restPopularMovies] = popularMovies.results;
-
-  const genreMoviePromises = movieGenres
-    .slice(0, 5)
-    .map((genre) => getDiscoverMovies({ page: FIRST_PAGE, genreId: genre.id }));
-
-  const genreMovies = await Promise.all(genreMoviePromises);
-
-  const sections: Array<{
-    title: string;
-    seeAllHref?: string;
-    type: RootPageSectionType;
-    items: MovieListItem[] | PersonListItem[] | Genre[];
-  }> = [
-    {
-      title: 'Popular Movies',
-      type: RootPageSectionType.MOVIES,
-      items: restPopularMovies,
-      seeAllHref: '/movies/popular',
-    },
-    {
-      title: 'Top Rated Movies',
-      type: RootPageSectionType.MOVIES,
-      items: topratedMovies.results,
-      seeAllHref: '/movies/top-rated',
-    },
-    {
-      title: 'Popular People',
-      type: RootPageSectionType.PEOPLE,
-      items: popularPeople.results,
-      seeAllHref: '/people/popular',
-    },
-    {
-      title: 'Movie Genres',
-      type: RootPageSectionType.GENRES,
-      items: movieGenres,
-    },
-    ...genreMovies.map((movies, i) => {
-      const genre = movieGenres[i];
-
-      return {
-        title: `${genre.name} Movies`,
-        type: RootPageSectionType.MOVIES,
-        seeAllHref: `/movies/discover?genreId=${genre.id}`,
-        items: movies.results,
-      };
-    }),
-  ];
+  const [featuredMovie] = popularMovies.results;
 
   return (
-    <>
+    <main>
       <FeaturedMovie movie={featuredMovie} />
-      <Stack spacing={2}>
-        <Divider />
-        {sections.map((section) => {
-          return (
-            <>
-              <section key={section.title}>
-                <Padder>
-                  <SectionTitle title={section.title} />
-                </Padder>
-                {section.type === RootPageSectionType.GENRES ? (
-                  <Padder>
-                    <Box
-                      component="ul"
-                      sx={{
-                        padding: 0,
-                        listStyle: 'none',
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: 1,
-                      }}
-                    >
-                      {section.items.map((item) => {
-                        const genre = item as Genre;
 
-                        return (
-                          <Box key={genre.id} component="li">
-                            <ChipLink
-                              href={`/movies/discover?genreId=${genre.id}`}
-                              label={genre.name}
-                              variant="outlined"
-                            />
-                          </Box>
-                        );
-                      })}
-                    </Box>
-                  </Padder>
-                ) : (
-                  <Padder>
-                    <SingleRowGridList
-                      itemCount={{ xs: 2, sm: 4, md: 5, lg: 6, xl: 7 }}
-                    >
-                      {section.items.slice(0, 7).map((item) => {
-                        return (
-                          <li key={item.id}>
-                            {section.type === RootPageSectionType.MOVIES ? (
-                              <MovieCard movie={item as MovieListItem} />
-                            ) : (
-                              section.type === RootPageSectionType.PEOPLE && (
-                                <PersonCard person={item as PersonListItem} />
-                              )
-                            )}
-                          </li>
-                        );
-                      })}
-                    </SingleRowGridList>
-                  </Padder>
-                )}
-                {section.seeAllHref && (
-                  <SeeAllLink isLinkVisible href={section.seeAllHref} />
-                )}
-              </section>
-              {!section.seeAllHref && <Divider />}
-            </>
+      <Stack spacing={6}>
+        <Divider />
+
+        <Suspense
+          fallback={
+            <FeaturedListSectionSkeleton
+              title="Popular Movies"
+              mediaType={MediaType.MOVIE}
+            />
+          }
+        >
+          <FeaturedListSection
+            title="Popular Movies"
+            mediaType={MediaType.MOVIE}
+            seeAllHref="/movies/popular"
+            promise={getPopularMovies(FIRST_PAGE)}
+            // Since we show the first popular movie as the featured movie,
+            // we don't show it here in the list again.
+            skipFirstItem
+          />
+        </Suspense>
+
+        <Suspense
+          fallback={
+            <FeaturedListSectionSkeleton
+              title="Top Rated Movies"
+              mediaType={MediaType.MOVIE}
+            />
+          }
+        >
+          <FeaturedListSection
+            title="Top Rated Movies"
+            mediaType={MediaType.MOVIE}
+            seeAllHref="/movies/top-rated"
+            promise={getTopRatedMovies(FIRST_PAGE)}
+          />
+        </Suspense>
+
+        <Suspense
+          fallback={
+            <FeaturedListSectionSkeleton
+              title="Popular People"
+              mediaType={MediaType.PERSON}
+            />
+          }
+        >
+          <FeaturedListSection
+            title="Popular People"
+            mediaType={MediaType.PERSON}
+            seeAllHref="/people/popular"
+            promise={getPopularPeople(FIRST_PAGE)}
+          />
+        </Suspense>
+
+        {movieGenres.slice(0, 5).map((genre) => {
+          const searchParams = new URLSearchParams();
+          searchParams.set('genreId', genre.id.toString());
+
+          const title = `${genre.name} Movies`;
+          const mediaType = MediaType.MOVIE;
+
+          return (
+            <Suspense
+              key={genre.id}
+              fallback={
+                <FeaturedListSectionSkeleton
+                  title={title}
+                  mediaType={mediaType}
+                />
+              }
+            >
+              <FeaturedListSection
+                title={`${genre.name} Movies`}
+                mediaType={mediaType}
+                seeAllHref={createUrl('/movies/discover', searchParams)}
+                promise={getDiscoverMovies(FIRST_PAGE, genre.id)}
+              />
+            </Suspense>
           );
         })}
       </Stack>
-    </>
+    </main>
   );
 }

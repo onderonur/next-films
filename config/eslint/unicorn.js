@@ -7,5 +7,8 @@ module.exports = {
     'unicorn/no-null': 'off',
     'unicorn/prefer-module': 'off',
     'unicorn/explicit-length-check': 'off',
+    'unicorn/prefer-ternary': 'off',
+    'unicorn/no-array-for-each': 'off',
+    'unicorn/prefer-export-from': 'off',
   },
 };

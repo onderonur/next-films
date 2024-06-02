@@ -1,12 +1,13 @@
-import { FIRST_PAGE } from '@/common/common-constants';
-import { Padder } from '@/common/padder';
-import { PageTitle } from '@/common/page-title';
-import { FeaturedMovie } from '@/movies/featured-movie';
-import { getTopRatedMovies } from '@/movies/movie-fetchers';
-import { MovieInfiniteGridList } from '@/movies/movie-infinite-grid-list';
+import { FIRST_PAGE } from '@/core/shared/utils';
+import { Padder } from '@/core/ui/components/padder';
+import { Title } from '@/core/ui/components/title';
+import { FeaturedMovie } from '@/features/movies/components/featured-movie';
+import { MovieInfiniteGridList } from '@/features/movies/components/movie-infinite-grid-list';
+import { getTopRatedMovies } from '@/features/movies/data';
 import { Divider, Stack } from '@mui/material';
 
-// TODO: Page naming'ine Next'ten falan bak. Hatta genel naming'lere bak root page, layout vs vs.
+export const dynamic = 'force-dynamic';
+
 export default async function TopRatedMoviesPage() {
   const firstPage = await getTopRatedMovies(FIRST_PAGE);
 
@@ -16,19 +17,19 @@ export default async function TopRatedMoviesPage() {
   infiniteListSearchParams.set('page', '%pageIndex%');
 
   return (
-    <>
+    <main>
       <FeaturedMovie movie={featuredMovie} />
       <Stack spacing={2}>
         <Divider />
         <Padder>
-          <PageTitle title="Top Rated Movies" />
+          <Title level={1} title="Top Rated Movies" />
           <MovieInfiniteGridList
-            pageKeyTemplate={`/movies/top-rated/api?${infiniteListSearchParams.toString()}`}
+            pageKeyTemplate={`/api/movies/top-rated?${infiniteListSearchParams.toString()}`}
             firstPage={firstPage}
             skipFirstMovie
           />
         </Padder>
       </Stack>
-    </>
+    </main>
   );
 }

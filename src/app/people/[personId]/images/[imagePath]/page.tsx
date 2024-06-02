@@ -1,8 +1,8 @@
-import { ImageGallery } from '@/medias/image-gallery';
-import { getPersonDetails } from '@/people/people-fetchers';
-import { getMetadata } from '@/seo/seo-utils';
-import { getTmdbConfiguration } from '@/tmdb/tmdb-configuration-fetchers';
-import { getTmdbImageUrl } from '@/tmdb/tmdb-configuration-utils';
+import { getMetadata } from '@/core/seo/utils';
+import { ImageGallery } from '@/features/media/components/image-gallery';
+import { getPerson, getPersonImages } from '@/features/people/data';
+import { getTmdbConfiguration } from '@/features/tmdb/data';
+import { getTmdbImageUrl } from '@/features/tmdb/utils';
 import { notFound } from 'next/navigation';
 
 async function getPageData({
@@ -12,24 +12,19 @@ async function getPageData({
   personId: string;
   imagePath: string;
 }) {
-  const [person, tmdbConfiguration] = await Promise.all([
-    getPersonDetails(Number(personId)),
+  const [person, images, tmdbConfiguration] = await Promise.all([
+    getPerson(Number(personId)),
+    getPersonImages(Number(personId)),
     getTmdbConfiguration(),
   ]);
 
-  if (!person) {
-    notFound();
-  }
-
-  const images = person.images.profiles;
+  if (!person) notFound();
 
   const imageToView = images.find(
     (backdrop) => backdrop.file_path === `/${imagePath}`,
   );
 
-  if (!imageToView) {
-    notFound();
-  }
+  if (!imageToView) notFound();
 
   return { person, tmdbConfiguration, images, imageToView };
 }
