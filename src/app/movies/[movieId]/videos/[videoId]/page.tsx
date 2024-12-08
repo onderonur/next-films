@@ -17,6 +17,7 @@ import {
   ListItemAvatar,
   ListItemText,
   ListSubheader,
+  Toolbar,
 } from '@mui/material';
 import { notFound } from 'next/navigation';
 
@@ -83,7 +84,23 @@ export default async function MovieVideoPage({
           }}
         >
           <Card component="main" sx={responsiveBorderRadius()}>
-            <YouTubePlayer youTubeId={videoToWatch.key} />
+            <Box
+              sx={{
+                position: { xs: 'fixed', md: 'initial' },
+                top: 0,
+                width: '100%',
+                zIndex: 'fab',
+              }}
+            >
+              <Toolbar sx={{ display: { md: 'none' } }} />
+              <YouTubePlayer youTubeId={videoToWatch.key} />
+            </Box>
+            <Box
+              sx={{
+                aspectRatio: '16 / 9',
+                display: { md: 'none' },
+              }}
+            />
             <CardHeaderWithAvatar
               title={videoToWatch.name}
               subheader={movie.title}
