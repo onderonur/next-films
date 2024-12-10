@@ -11,14 +11,13 @@ import { Card, CardContent, Stack } from '@mui/material';
 import { notFound } from 'next/navigation';
 
 type MoviePeoplePageProps = {
-  params: {
+  params: Promise<{
     movieId: string;
-  };
+  }>;
 };
 
-export default async function MoviePeoplePage({
-  params: { movieId },
-}: MoviePeoplePageProps) {
+export default async function MoviePeoplePage(props: MoviePeoplePageProps) {
+  const { movieId } = await props.params;
   const [movie, credits] = await Promise.all([
     getMovie(Number(movieId)),
     getMovieCredits(Number(movieId)),

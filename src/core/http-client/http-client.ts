@@ -27,10 +27,7 @@ export const httpClient = {
     searchParams?: URLSearchParams,
   ): Promise<Data> => {
     const fullUrl = createUrl(url, searchParams);
-    const response = await fetch(fullUrl, {
-      // TODO: Remove after migrating to Next.js v15
-      cache: 'no-store',
-    });
+    const response = await fetch(fullUrl);
     const data = await handleResponse<Data>(response);
     return data;
   },

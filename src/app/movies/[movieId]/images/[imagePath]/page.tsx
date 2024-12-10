@@ -30,15 +30,14 @@ async function getPageData({
 }
 
 type MovieImagePageProps = {
-  params: {
+  params: Promise<{
     movieId: string;
     imagePath: string;
-  };
+  }>;
 };
 
-export async function generateMetadata({
-  params: { movieId, imagePath },
-}: MovieImagePageProps) {
+export async function generateMetadata(props: MovieImagePageProps) {
+  const { movieId, imagePath } = await props.params;
   const { movie, tmdbConfiguration, imageToView } = await getPageData({
     movieId,
     imagePath,
@@ -60,9 +59,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function MovieImagePage({
-  params: { movieId, imagePath },
-}: MovieImagePageProps) {
+export default async function MovieImagePage(props: MovieImagePageProps) {
+  const { movieId, imagePath } = await props.params;
   const { movie, images, imageToView } = await getPageData({
     movieId,
     imagePath,

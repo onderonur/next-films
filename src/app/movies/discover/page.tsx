@@ -27,12 +27,14 @@ const searchParamsSchema = z
   .partial();
 
 type DiscoverMoviesPageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
-export async function generateMetadata({
-  searchParams,
-}: DiscoverMoviesPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: DiscoverMoviesPageProps,
+): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+
   const defaultMetadata = getMetadata({
     title: 'Discover Movies',
   });
@@ -58,9 +60,11 @@ export async function generateMetadata({
   });
 }
 
-export default async function DiscoverMoviesPage({
-  searchParams,
-}: DiscoverMoviesPageProps) {
+export default async function DiscoverMoviesPage(
+  props: DiscoverMoviesPageProps,
+) {
+  const searchParams = await props.searchParams;
+
   const { genreId, sortBy } = parseSearchParams({
     searchParamsSchema,
     searchParams,
