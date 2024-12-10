@@ -43,15 +43,14 @@ async function getPageData({
 }
 
 type MovieVideoPageProps = {
-  params: {
+  params: Promise<{
     movieId: string;
     videoId: string;
-  };
+  }>;
 };
 
-export async function generateMetadata({
-  params: { movieId, videoId },
-}: MovieVideoPageProps) {
+export async function generateMetadata(props: MovieVideoPageProps) {
+  const { movieId, videoId } = await props.params;
   const { movie, videoToWatch } = await getPageData({ movieId, videoId });
 
   return getMetadata({
@@ -64,9 +63,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function MovieVideoPage({
-  params: { movieId, videoId },
-}: MovieVideoPageProps) {
+export default async function MovieVideoPage(props: MovieVideoPageProps) {
+  const { movieId, videoId } = await props.params;
   const { movie, videos, videoToWatch } = await getPageData({
     movieId,
     videoId,

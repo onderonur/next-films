@@ -30,15 +30,14 @@ async function getPageData({
 }
 
 type PersonImagePageProps = {
-  params: {
+  params: Promise<{
     personId: string;
     imagePath: string;
-  };
+  }>;
 };
 
-export async function generateMetadata({
-  params: { personId, imagePath },
-}: PersonImagePageProps) {
+export async function generateMetadata(props: PersonImagePageProps) {
+  const { personId, imagePath } = await props.params;
   const { person, tmdbConfiguration, imageToView } = await getPageData({
     personId,
     imagePath,
@@ -60,9 +59,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function PersonImagePage({
-  params: { personId, imagePath },
-}: PersonImagePageProps) {
+export default async function PersonImagePage(props: PersonImagePageProps) {
+  const { personId, imagePath } = await props.params;
   const { person, images, imageToView } = await getPageData({
     personId,
     imagePath,

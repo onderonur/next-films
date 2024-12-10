@@ -12,5 +12,5 @@ export function SeeAllLink({ href }: SeeAllLinkProps) {
 }
 
 export function SeeAllLinkSkeleton() {
-  return <Skeleton width={68} sx={{ fontSize: '2.5rem' }} />;
+  return <Skeleton width={68} sx={{ fontSize: '2rem' }} />;
 }

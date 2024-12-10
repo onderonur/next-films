@@ -1,5 +1,8 @@
-/** @type {import("prettier").Config} */
-module.exports = {
+/**
+ * @see https://prettier.io/docs/en/configuration.html
+ * @type {import("prettier").Config}
+ */
+const config = {
   singleQuote: true,
   trailingComma: 'all',
   endOfLine: 'lf',
@@ -9,3 +12,5 @@ module.exports = {
   organizeImportsSkipDestructiveCodeActions: true,
   plugins: ['prettier-plugin-organize-imports', 'prettier-plugin-packagejson'],
 };
+
+export default config;

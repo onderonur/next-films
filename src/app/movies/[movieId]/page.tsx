@@ -44,14 +44,15 @@ async function getPageData(movieId: Id) {
 }
 
 type MoviePageProps = {
-  params: {
+  params: Promise<{
     movieId: string;
-  };
+  }>;
 };
 
-export async function generateMetadata({
-  params,
-}: MoviePageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: MoviePageProps,
+): Promise<Metadata> {
+  const params = await props.params;
   const movieId = Number(params.movieId);
   const { movie, tmdbConfiguration } = await getPageData(movieId);
 
@@ -73,7 +74,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function MoviePage({ params }: MoviePageProps) {
+export default async function MoviePage(props: MoviePageProps) {
+  const params = await props.params;
   const movieId = Number(params.movieId);
   const { movie } = await getPageData(movieId);
 
@@ -102,7 +104,13 @@ export default async function MoviePage({ params }: MoviePageProps) {
 
               <Divider />
             </Stack>
-            <Stack spacing={6}>
+            <Stack
+              // TODO: `Stack` with `spacing` adds unnecessary `margin-top` to the first suspended
+              // element too while it's showing its fallback.
+              // So, `gap` is used here instead of `spacing`.
+              // Will check this with the latest MUI version too.
+              gap={6}
+            >
               <Suspense fallback={<MovieVideosSkeleton />}>
                 <MovieVideos movieId={movieId} />
               </Suspense>

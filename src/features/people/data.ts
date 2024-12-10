@@ -26,7 +26,7 @@ export const getPopularPeople = cache(async (page: number) => {
 
   const permittedPeople = filterPermittedPageResults(people);
 
-  // TODO: This can be moved to person filter and we can remote people with empty `known_for` too.
+  // TODO: This can be moved to person filter and we can remove people with empty `known_for` too.
   permittedPeople.results.forEach((person) => {
     person.known_for = filterPermittedMovies(person.known_for);
   });

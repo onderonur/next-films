@@ -32,7 +32,7 @@ export const searchPeople = cache(async (query: string, page: number) => {
     searchParams,
   );
 
-  // TODO: This can be moved to person filter and we can remote people with empty `known_for` too.
+  // TODO: This can be moved to person filter and we can remove people with empty `known_for` too.
   results.results.forEach((person) => {
     person.known_for = filterPermittedMovies(person.known_for);
   });

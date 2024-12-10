@@ -7,7 +7,7 @@ export function TmdbAttribution() {
 
   return (
     <Box sx={{ padding: 2, textAlign: 'center' }}>
-      <NextLink href="https://www.themoviedb.org/">
+      <NextLink href="https://www.themoviedb.org/" aria-label="The Movie DB">
         <SvgIcon viewBox="0 0 185.04 133.4" sx={{ fontSize: 48 }}>
           <defs>
             <linearGradient

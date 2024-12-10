@@ -7,22 +7,11 @@ export const PERMITTED_LIMIT = {
   minPopularity: 5,
 };
 
-const bannedWords = process.env.BANNED_WORDS?.split(',') ?? [];
-
-function doesContainBannedWords(text: string) {
-  return bannedWords.some((bannedWord) => {
-    const regex = new RegExp(`\\b${bannedWord}\\b`, 'i');
-    return regex.test(text);
-  });
-}
-
 export function isMoviePermitted(movie: PermittedMovie) {
   return (
     !movie.adult &&
     movie.vote_count >= PERMITTED_LIMIT.minVoteCount &&
-    movie.popularity >= PERMITTED_LIMIT.minPopularity &&
-    !doesContainBannedWords(movie.title) &&
-    !doesContainBannedWords(movie.overview)
+    movie.popularity >= PERMITTED_LIMIT.minPopularity
   );
 }
 
@@ -31,11 +20,7 @@ export function filterPermittedMovies<T extends PermittedMovie>(movies: T[]) {
 }
 
 export function isPersonPermitted(person: PermittedPerson) {
-  return (
-    !person.adult &&
-    person.popularity >= PERMITTED_LIMIT.minPopularity &&
-    !doesContainBannedWords(person.biography ?? '')
-  );
+  return !person.adult && person.popularity >= PERMITTED_LIMIT.minPopularity;
 }
 
 export function filterPermittedPeople<T extends PermittedPerson>(people: T[]) {

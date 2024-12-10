@@ -17,12 +17,12 @@ const searchParamsSchema = z
   .partial();
 
 type SearchMoviesPageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
-export default async function SearchMoviesPage({
-  searchParams,
-}: SearchMoviesPageProps) {
+export default async function SearchMoviesPage(props: SearchMoviesPageProps) {
+  const searchParams = await props.searchParams;
+
   const { query } = parseSearchParams({
     searchParamsSchema,
     searchParams,

@@ -33,14 +33,15 @@ async function getPageData(personId: string) {
 }
 
 type PersonPageProps = {
-  params: {
+  params: Promise<{
     personId: string;
-  };
+  }>;
 };
 
-export async function generateMetadata({
-  params: { personId },
-}: PersonPageProps): Promise<Metadata> {
+export async function generateMetadata(
+  props: PersonPageProps,
+): Promise<Metadata> {
+  const { personId } = await props.params;
   const { tmdbConfiguration, person } = await getPageData(personId);
 
   return getMetadata({
@@ -59,9 +60,8 @@ export async function generateMetadata({
   });
 }
 
-export default async function PersonPage({
-  params: { personId },
-}: PersonPageProps) {
+export default async function PersonPage(props: PersonPageProps) {
+  const { personId } = await props.params;
   const { person } = await getPageData(personId);
 
   return (

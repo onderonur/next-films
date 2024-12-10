@@ -17,12 +17,12 @@ const searchParamsSchema = z
   .partial();
 
 type SearchPeoplePageProps = {
-  searchParams: SearchParams;
+  searchParams: Promise<SearchParams>;
 };
 
-export default async function SearchPeoplePage({
-  searchParams,
-}: SearchPeoplePageProps) {
+export default async function SearchPeoplePage(props: SearchPeoplePageProps) {
+  const searchParams = await props.searchParams;
+
   const { query } = parseSearchParams({
     searchParamsSchema,
     searchParams,
